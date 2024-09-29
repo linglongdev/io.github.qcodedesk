@@ -1,0 +1,38 @@
+version: "1"
+
+package:
+  id: io.github.qcodedesk
+  name: qcodedesk
+  version: 0.0.9.1
+  kind: app
+  description: |
+    A Qt based cpp0x.pl's Code Desk app.
+
+command:
+  - /opt/apps/io.github.qcodedesk/files/bin/qcodedesk
+
+base: org.deepin.foundation/23.0.0
+runtime: org.deepin.Runtime/23.0.1
+
+sources:
+  - kind: git
+    url: https://github.com/poxip/qcodedesk.git
+    version: master
+    commit: 9d841613c0829abf622003fb48afd7759ce0c4cc
+
+  - kind: file
+    url: http://ftp.cn.debian.org/debian/pool/main/libn/libnotify/libnotify-dev_0.7.7-4_amd64.deb
+    digest: d5f6bc8a8a0972a6888300a7eca3ab9444f8281d5272da39e33e701f79b08943
+
+  - kind: file
+    url: http://ftp.cn.debian.org/debian/pool/main/libn/libnotify/libnotify4_0.7.7-4_amd64.deb
+    digest: 9d5b50c9aaf03302fb4aa7786887d39ed91faed71d3eb6c5bcb0421871bdac82
+
+build: |
+  bash ./install_dep linglong/sources $PREFIX
+
+  cd /project/linglong/sources/qcodedesk.git
+  git apply ../../../0001-install.patch
+  qmake -makefile PREFIX=${PREFIX} LIB_INSTALL_DIR=${PREFIX}/lib/${TRIPLET}
+  make -j$(nproc)
+  make install
